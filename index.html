@@ -13,7 +13,9 @@
                 params
             }
             console.log('iOS call')
-            window.webkit.messageHandlers.jsMessageHandler.postMessage({ message })
+            window.webkit.messageHandlers.observer.postMessage({
+                  name: 'getGalleryImage'
+            });
         }
 
         function callBackToNative(json) {
