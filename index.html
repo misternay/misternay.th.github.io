@@ -6,6 +6,11 @@
         <title>Demo</title>
     </head>
     <script>
+        function buttonClickPAss(a,b,c) {
+            //  console.log(action);
+            return a;// return what i passed to the function
+        }
+
         function callNative(eventName, params) {
             // Call iOS interface
             const message = {
@@ -13,29 +18,203 @@
                 params
             }
             console.log('iOS call')
-            window.webkit.messageHandlers.observer.postMessage({
-                  name: 'getGalleryImage'
-            });
+            window.webkit.messageHandlers.jsMessageHandler.postMessage({ message })
         }
+
+        function webviewClose(){
+            callNative("closeExweb","ssss")
+        }
+
+        function state1() {
+            callNative("widgetCallback",{
+                "applicationName":"my-work",
+                "state":"1"
+            })
+        }
+
+        function state2() {
+            callNative("widgetCallback",{
+                "applicationName":"my-work",
+                "state":"2"
+            })
+        }
+
+        function state3() {
+            callNative("widgetCallback",{
+                "applicationName":"my-work",
+                "state":"3"
+            })
+        }
+
+
+        function state4() {
+            callNative("widgetCallback",{
+                "applicationName":"my-work",
+                "state":"4"
+            })
+        }
+
+        function back(){
+            callNative("back","ssss")
+        }
+
+        function generateRPIN(){
+
+            callNative(
+                       "generateRPIN",
+                       {"pin":"aaaa",
+
+                           "refId":"hello"}
+                       )
+
+        }
+
+        function debitCardPinVerification() {
+            callNative(
+                       "debitCardPinVerification",
+                       {
+                           "pin":"010203",
+                           "refId":"TestByDemoWebViewController"
+                       }
+                       )
+        }
+
+        function pinConfirmation() {
+            callNative(
+                       "pinConfirmation",
+                       {
+                           "moduleType":"Demo",
+                           "refId":"1101",
+                           "callbackName":"DemoWebVuew"
+                       }
+                       )
+        }
+
+        function openUrl() {
+            callNative(
+                       "openUrl",
+                       {
+                           "url":"http://www.google.co.th"
+                       }
+                       )
+        }
+
+        function navbarColorDark() {
+            callNative(
+                       "navbarColor",
+                       {
+                           "color": "dark"
+                       }
+                       )
+        }
+
+        function navbarColorLight() {
+            callNative(
+                       "navbarColor",
+                       {
+                           "color": "light"
+                       }
+                       )
+        }
+
+        function navbarColorNone() {
+            callNative(
+                       "navbarColor",
+                       {
+                           "color": "none"
+                       }
+                       )
+        }
+
+        function openLinkTemplate() {
+            callNative(
+                       "openLinkTemplate",
+                       {
+                           "color": "none"
+                       }
+                       )
+        }
+
+
+        function requireToken() {
+            callNative(
+                       "requireToken",
+                       { "url": "URLMock",
+                           "redirection": false,
+                           "action": "Hello World",
+                           "customerStatus": "Active",
+                           "deviceNickName": "Joe iPhone",
+                           "emailVerifyFlag": "false",
+                       }
+                       )
+        }
+
 
         function callBackToNative(json) {
             var obj = JSON.parse(json);
             callNative("alert", obj)
         }
 
-        function getPhoto() {
-            callNative("getGalleryImage", {})
+        function openCob() {
+            callNative(
+                       "openCobCheckNCB",
+                       {
+                           "ncbGroupPattern": "M01",
+                           "ncbProductList": [
+                                              {
+                                                  "accountTypeCode": "05",
+                                                  "accountTypeNameTH": "สินเชื่อบุคคล",
+                                                  "accountTypeNameEN": "Personal Loan"
+                                              },
+                                              {
+                                                  "accountTypeCode": "05",
+                                                  "accountTypeNameTH": "สินบัตรเครดิต",
+                                                  "accountTypeNameEN": "Credit Card"
+                                              }
+                                              ],
+                                              "channelCode": "My_Credit",
+                                              "customerReferenceType": "RM",
+                                              "customerReferenceID": "001100000000000000000000009726",
+                                              "ncbModelConsent": "Y"
+                       }
+                       );
+        }
+
+        function sendCobCheckNCBEvent(message) {
+            console.log('native callback');
+            console.log(message);
+            document.getElementById('userActionDisplay').textContent = `${message}`;
         }
     </script>
     <body>
-        <p><h1>Test JS Bridge Web to Native </h1></p>
-        <p>get photo</p>
-        <button onclick="getPhoto()">Get Photo</button>
+        <p><h1>Test OneApp Bridge MyWork to Native </h1></p>
+        <p>Mock open cob</p>
+        <button onclick="openCob()">Open COB</button>
         <br>
         <hr>
         <div id="userActionDisplay"></div>
         <hr>
         <br>
+        <p>State 1</p>
+        <button onclick="state1()">State 1</button>
+        <br>
+        <hr>
+        <hr>
+        <br>
+        <p>State 2</p>
+        <button onclick="state2()">State 2</button>
+        <br>
+        <hr>
+        <hr>
+        <br>
+        <p>State 3</p>
+        <button onclick="state3()">State 3</button>
+        <br>
+        <hr>
+        <p>Back</p>
+        <button onclick="back()">Back</button>
+        <br>
+        <hr>
     </body>
     </body>
 </html>
