@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Demo</title>
+    </head>
+    <script>
+        function callNative(eventName, params) {
+            // Call iOS interface
+            const message = {
+                eventName,
+                params
+            }
+            console.log('iOS call')
+            window.webkit.messageHandlers.jsMessageHandler.postMessage({ message })
+        }
+
+        function callBackToNative(json) {
+            var obj = JSON.parse(json);
+            callNative("alert", obj)
+        }
+
+        function getPhoto() {
+            callNative("getGalleryImage", {})
+        }
+    </script>
+    <body>
+        <p><h1>Test JS Bridge Web to Native </h1></p>
+        <p>get photo</p>
+        <button onclick="getPhoto()">Get Photo</button>
+        <br>
+        <hr>
+        <div id="userActionDisplay"></div>
+        <hr>
+        <br>
+    </body>
+    </body>
+</html>
