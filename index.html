@@ -12,13 +12,12 @@
 
         function callNative(eventName, params) {
             // Call iOS interface
-            isWebKit();
             const message = {
-                eventName,
+                name,
                 params
             }
             console.log('iOS call')
-            window.webkit.messageHandlers.jsMessageHandler.postMessage(message)
+            window.webkit.messageHandlers.observer.postMessage(message)
         }
 
         function callBackToNative(json) {
