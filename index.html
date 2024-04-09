@@ -18,7 +18,7 @@
                 params
             }
             console.log('iOS call')
-            window.webkit.messageHandlers.jsMessageHandler.postMessage({ message })
+            window.webkit.messageHandlers.jsMessageHandler.postMessage(message)
         }
 
         function callBackToNative(json) {
@@ -29,11 +29,23 @@
         function getPhoto() {
             callNative("getGalleryImage", {})
         }
+        function getPhotoFromCamera() {
+            callNative("getCameraImage", {})
+        }
+        function getQRCode() {
+            callNative("getQrCode", {})
+        }
     </script>
     <body>
         <p><h1>Test JS Bridge Web to Native </h1></p>
         <p>get photo</p>
         <button onclick="getPhoto()">Get Photo</button>
+        <br>
+        <p>get photo from camera</p>
+        <button onclick="getPhotoFromCamera()">Get Photo camera</button>
+        <br>
+        <p>get QRCode</p>
+        <button onclick="getQRCode()">Get QRCode</button>
         <br>
         <hr>
         <div id="userActionDisplay"></div>
