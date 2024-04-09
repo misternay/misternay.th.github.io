@@ -6,8 +6,13 @@
         <title>Demo</title>
     </head>
     <script>
+        function isWebKit() {
+            return window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.jsMessageHandler;
+        }
+
         function callNative(eventName, params) {
             // Call iOS interface
+            isWebKit();
             const message = {
                 eventName,
                 params
