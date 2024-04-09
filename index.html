@@ -13,7 +13,7 @@
         function callNative(eventName, params) {
             // Call iOS interface
             const message = {
-                name,
+                name: eventName,
                 params
             }
             console.log('iOS call')
