@@ -119,8 +119,10 @@
         function callNative(eventName, params = {}) {
             if (window.JSBridge && window.JSBridge[eventName]) {
                 if(params == undefined || params == {} || params == null) {
+                    console.log("android if", params);
                     window.JSBridge[eventName]();
                 } else {
+                    console.log("android else", params);
                     window.JSBridge[eventName]();
                 }
             } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer) {
