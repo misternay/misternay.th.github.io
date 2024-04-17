@@ -109,29 +109,96 @@
 
         // Check if the current environment is WebKit (iOS)
         function isWebKit() {
-            return window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.jsMessageHandler;
+            return window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer;
         }
 
         // Function to call native functionality
-        function callNative(eventName, params) {
-            const message = { name: eventName, params };
-            console.log('iOS call');
-            window.webkit.messageHandlers.observer.postMessage(message);
+        function callNative(eventName, params = {}) {
+            const message = { name: eventName, ...params };
+            console.log('Native call:', message);
 
-            // Simulate callback from native side with sample data
-            // simulateNativeCallback(eventName);
+            if (isWebKit()) {
+                window.webkit.messageHandlers.observer.postMessage(message);
+            } else {
+                console.warn('Native bridge not available');
+            }
+        }
+
+        // Helper functions to trigger native functionality
+        function triggerNativeGetCameraImage(callback, callbackError) {
+            callNative('getCameraImage', {
+                callback,
+                callbackError
+            });
+        }
+
+        function initAuth(callback, callbackError) {
+            callNative('initAuth', {
+                callback,
+                callbackError
+            });
+        }
+
+        function openPwP(ppoaTnxRefId, callbackError) {
+            callNative('openPwP', {
+                ppoaTnxRefId,
+                callbackError
+            });
+        }
+
+        function triggerNativeSaveImageToGallery(data, callback, callbackError) {
+            callNative('saveImageToGallery', {
+                base64Str: data,
+                callback,
+                callbackError
+            });
+        }
+
+        function triggerNativeGetGalleryImage(callback, callbackError) {
+            callNative('getGalleryImage', {
+                callback,
+                callbackError
+            });
+        }
+
+        function triggerNativeGetQrCode(callback, callbackError) {
+            callNative('getQrCode', {
+                callback,
+                callbackError
+            });
         }
 
         // Object containing functions to call native functionality
         const iOSBridge = {
             getGalleryImage() {
-                callNative('getGalleryImage', {});
+                triggerNativeGetGalleryImage(
+                    (base64Image) => {
+                        displayImage(base64Image, 'galleryResult');
+                    },
+                    (errorCode, errorDescription) => {
+                        handleError('galleryResult', `${errorCode}: ${errorDescription}`);
+                    }
+                );
             },
             getCameraImage() {
-                callNative('getCameraImage', {});
+                triggerNativeGetCameraImage(
+                    (base64Image) => {
+                        displayImage(base64Image, 'cameraResult');
+                    },
+                    (errorCode, errorDescription) => {
+                        handleError('cameraResult', `${errorCode}: ${errorDescription}`);
+                    }
+                );
             },
             getQrCode() {
-                callNative('getQrCode', {});
+                triggerNativeGetQrCode(
+                    (qrData) => {
+                        document.getElementById('qrCodeResult').innerHTML = `<p>QR Code Result:</p><p>${qrData}</p>`;
+                    },
+                    (errorCode, errorDescription) => {
+                        handleError('qrCodeResult', `${errorCode}: ${errorDescription}`);
+                    }
+                );
             }
         };
 
@@ -139,31 +206,6 @@
         document.getElementById('getPhotoButton').addEventListener('click', iOSBridge.getGalleryImage);
         document.getElementById('getPhotoCameraButton').addEventListener('click', iOSBridge.getCameraImage);
         document.getElementById('getQRCodeButton').addEventListener('click', iOSBridge.getQrCode);
-
-        // Callback functions for handling native function results
-        function getGalleryImageCallback(base64Image) {
-            if (base64Image) {
-                displayImage(base64Image, 'galleryResult');
-            } else {
-                handleError('galleryResult', 'Failed to get image from gallery');
-            }
-        }
-
-        function getCameraImageCallback(base64Image) {
-            if (base64Image) {
-                displayImage(base64Image, 'cameraResult');
-            } else {
-                handleError('cameraResult', 'Failed to get image from camera');
-            }
-        }
-
-        function getQrCodeCallback(qrCodeData) {
-            if (qrCodeData) {
-                document.getElementById('qrCodeResult').innerHTML = `<p>QR Code Result:</p><p>${qrCodeData}</p>`;
-            } else {
-                handleError('qrCodeResult', 'Failed to get QR code data');
-            }
-        }
 
         // Function to display an image in a result box
         function displayImage(base64Image, targetId) {
@@ -185,23 +227,6 @@
             errorElement.textContent = errorMessage;
             errorElement.classList.add('error-message');
             resultBox.appendChild(errorElement);
-        }
-
-        // Simulate callback from native side with sample data
-        function simulateNativeCallback(eventName) {
-            switch (eventName) {
-                case 'getGalleryImage':
-                    getGalleryImageCallback('BASE64_IMAGE_DATA_EXAMPLE');
-                    break;
-                case 'getCameraImage':
-                    getCameraImageCallback('BASE64_IMAGE_DATA_EXAMPLE');
-                    break;
-                case 'getQrCode':
-                    getQrCodeCallback('SAMPLE_QR_CODE_DATA');
-                    break;
-                default:
-                    console.log('Unknown event:', eventName);
-            }
         }
     </script>
 </body>
