@@ -126,10 +126,9 @@
 
         // Helper functions to trigger native functionality
         function triggerNativeGetCameraImage(callback, callbackError) {
-            callNative('getCameraImage', {
-                callback,
-                callbackError
-            });
+            window.bridge.getCameraImageCallbackError = callbackError;
+            window.bridge.getCameraImageCallback = callback;
+            callNative('getCameraImage');
         }
 
         function initAuth(callback, callbackError) {
@@ -155,17 +154,15 @@
         }
 
         function triggerNativeGetGalleryImage(callback, callbackError) {
-            callNative('getGalleryImage', {
-                callback,
-                callbackError
-            });
+            window.bridge.getGalleryImageCallbackError = callbackError;
+            window.bridge.getGalleryImageCallback = callback;
+            callNative('getGalleryImage');
         }
 
         function triggerNativeGetQrCode(callback, callbackError) {
-            callNative('getQrCode', {
-                callback,
-                callbackError
-            });
+            window.bridge.getQrCodeCallbackError = callbackError;
+            window.bridge.getQrCodeCallback = callback;
+            callNative('getQrCode');
         }
 
         // Object containing functions to call native functionality
