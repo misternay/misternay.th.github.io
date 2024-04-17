@@ -238,7 +238,7 @@
                         document.getElementById('saveImageResult').innerHTML = `<p>Save Image Result:</p><p>Success</p>`;
                     },
                     (errorCode, errorDescription) => {
-                        handleError('Error saving image', `${errorCode}: ${errorDescription}`);
+                        handleError('saveImageResult', `${errorCode}: ${errorDescription}`);
                     }
                 );
             }
