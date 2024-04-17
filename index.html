@@ -110,7 +110,7 @@
         </div>
     </main>
     <footer>
-        <div>For Test MiniApp Demo</div>
+        <div style="text-align: center;">For Test MiniApp Demo</div>
     </footer>
     <script>
         'use strict';
@@ -125,7 +125,7 @@
             } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer) {
                 window.webkit.messageHandlers.observer.postMessage(message);
             } else {
-                displayError(`Native ${eventName} interface is not available.`);
+                alert(`Native ${eventName} interface is not available.`)
             }
         }
 
