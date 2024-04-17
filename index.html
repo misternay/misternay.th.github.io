@@ -107,27 +107,20 @@
     <script>
         'use strict';
 
-        // Check if the current environment is WebKit (iOS)
-        function isWebKit() {
-            return window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer;
-        }
-
         // Function to call native functionality
         function callNative(eventName, params = {}) {
             const message = { name: eventName, ...params };
             console.log('Native call:', message);
 
-            if (isWebKit()) {
-                window.webkit.messageHandlers.observer.postMessage(message);
-            } else {
-                console.warn('Native bridge not available');
-            }
+            window.webkit.messageHandlers.observer.postMessage(message);
         }
 
         // Helper functions to trigger native functionality
         function triggerNativeGetCameraImage(callback, callbackError) {
-            window.bridge.getCameraImageCallbackError = callbackError;
-            window.bridge.getCameraImageCallback = callback;
+            if (window.bridge) {
+                window.bridge.getCameraImageCallback = callback;
+                window.bridge.getCameraImageCallbackError = callbackError;
+            }
             callNative('getCameraImage');
         }
 
@@ -154,14 +147,18 @@
         }
 
         function triggerNativeGetGalleryImage(callback, callbackError) {
-            window.bridge.getGalleryImageCallbackError = callbackError;
-            window.bridge.getGalleryImageCallback = callback;
+            if (window.bridge) {
+                window.bridge.getGalleryImageCallback = callback;
+                window.bridge.getGalleryImageCallbackError = callbackError;
+            }
             callNative('getGalleryImage');
         }
 
         function triggerNativeGetQrCode(callback, callbackError) {
-            window.bridge.getQrCodeCallbackError = callbackError;
-            window.bridge.getQrCodeCallback = callback;
+            if (window.bridge) {
+                window.bridge.getQrCodeCallback = callback;
+                window.bridge.getQrCodeCallbackError = callbackError;
+            }
             callNative('getQrCode');
         }
 
