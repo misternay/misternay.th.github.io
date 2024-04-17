@@ -117,16 +117,16 @@
 
         // Function to call native functionality
         function callNative(eventName, params = {}) {
-            const message = { name: eventName, ...params };
-            console.log('Native call:', message);
-
             if (window.JSBridge && window.JSBridge[eventName]) {
                 if(params == undefined || params == {} || params == null) {
                     window.JSBridge[eventName]();
                 } else {
-                    window.JSBridge[eventName](...params);
+                    window.JSBridge[eventName]();
                 }
             } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer) {
+                const message = { name: eventName, ...params };
+                console.log('Native call:', message);
+
                 window.webkit.messageHandlers.observer.postMessage(message);
             } else {
                 alert(`Native ${eventName} interface is not available.`)
