@@ -1,55 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Demo</title>
-    </head>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulate Native JSBridge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .box-title {
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #3e8e41;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .result-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .error-message {
+            color: #ff0000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Simulate Native JSBridge</h1>
+    </header>
+    <main id="page-container">
+        <div class="box">
+            <h2 class="box-title">Get Photo from Gallery</h2>
+            <button id="getPhotoButton">Get Photo</button>
+            <section id="galleryResult" class="result-box"></section>
+        </div>
+        <div class="box">
+            <h2 class="box-title">Get Photo from Camera</h2>
+            <button id="getPhotoCameraButton">Get Photo from Camera</button>
+            <section id="cameraResult" class="result-box"></section>
+        </div>
+        <div class="box">
+            <h2 class="box-title">Get QR Code</h2>
+            <button id="getQRCodeButton">Get QRCode</button>
+            <section id="qrCodeResult" class="result-box"></section>
+        </div>
+    </main>
     <script>
+        'use strict';
+
+        // Check if the current environment is WebKit (iOS)
         function isWebKit() {
             return window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.jsMessageHandler;
         }
 
+        // Function to call native functionality
         function callNative(eventName, params) {
-            // Call iOS interface
-            const message = {
-                name: eventName,
-                params
+            const message = { name: eventName, params };
+            console.log('iOS call');
+            window.webkit.messageHandlers.observer.postMessage(message);
+
+            // Simulate callback from native side with sample data
+            // simulateNativeCallback(eventName);
+        }
+
+        // Object containing functions to call native functionality
+        const iOSBridge = {
+            getGalleryImage() {
+                callNative('getGalleryImage', {});
+            },
+            getCameraImage() {
+                callNative('getCameraImage', {});
+            },
+            getQrCode() {
+                callNative('getQrCode', {});
             }
-            console.log('iOS call')
-            window.webkit.messageHandlers.observer.postMessage(message)
+        };
+
+        // Event listeners for buttons
+        document.getElementById('getPhotoButton').addEventListener('click', iOSBridge.getGalleryImage);
+        document.getElementById('getPhotoCameraButton').addEventListener('click', iOSBridge.getCameraImage);
+        document.getElementById('getQRCodeButton').addEventListener('click', iOSBridge.getQrCode);
+
+        // Callback functions for handling native function results
+        function getGalleryImageCallback(base64Image) {
+            if (base64Image) {
+                displayImage(base64Image, 'galleryResult');
+            } else {
+                handleError('galleryResult', 'Failed to get image from gallery');
+            }
         }
 
-        function callBackToNative(json) {
-            var obj = JSON.parse(json);
-            callNative("alert", obj)
+        function getCameraImageCallback(base64Image) {
+            if (base64Image) {
+                displayImage(base64Image, 'cameraResult');
+            } else {
+                handleError('cameraResult', 'Failed to get image from camera');
+            }
         }
 
-        function getPhoto() {
-            callNative("getGalleryImage", {})
+        function getQrCodeCallback(qrCodeData) {
+            if (qrCodeData) {
+                document.getElementById('qrCodeResult').innerHTML = `<p>QR Code Result:</p><p>${qrCodeData}</p>`;
+            } else {
+                handleError('qrCodeResult', 'Failed to get QR code data');
+            }
         }
-        function getPhotoFromCamera() {
-            callNative("getCameraImage", {})
+
+        // Function to display an image in a result box
+        function displayImage(base64Image, targetId) {
+            const resultBox = document.getElementById(targetId);
+            resultBox.innerHTML = '';
+
+            const image = document.createElement('img');
+            image.src = `data:image/jpeg;base64,${base64Image}`;
+            image.alt = 'Result Image';
+            resultBox.appendChild(image);
         }
-        function getQRCode() {
-            callNative("getQrCode", {})
+
+        // Function to handle errors
+        function handleError(targetId, errorMessage) {
+            const resultBox = document.getElementById(targetId);
+            resultBox.innerHTML = '';
+
+            const errorElement = document.createElement('p');
+            errorElement.textContent = errorMessage;
+            errorElement.classList.add('error-message');
+            resultBox.appendChild(errorElement);
+        }
+
+        // Simulate callback from native side with sample data
+        function simulateNativeCallback(eventName) {
+            switch (eventName) {
+                case 'getGalleryImage':
+                    getGalleryImageCallback('BASE64_IMAGE_DATA_EXAMPLE');
+                    break;
+                case 'getCameraImage':
+                    getCameraImageCallback('BASE64_IMAGE_DATA_EXAMPLE');
+                    break;
+                case 'getQrCode':
+                    getQrCodeCallback('SAMPLE_QR_CODE_DATA');
+                    break;
+                default:
+                    console.log('Unknown event:', eventName);
+            }
         }
     </script>
-    <body>
-        <p><h1>Test JS Bridge Web to Native </h1></p>
-        <p>get photo</p>
-        <button onclick="getPhoto()">Get Photo</button>
-        <br>
-        <p>get photo from camera</p>
-        <button onclick="getPhotoFromCamera()">Get Photo camera</button>
-        <br>
-        <p>get QRCode</p>
-        <button onclick="getQRCode()">Get QRCode</button>
-        <br>
-        <hr>
-        <div id="userActionDisplay"></div>
-        <hr>
-        <br>
-    </body>
-    </body>
+</body>
+
 </html>
