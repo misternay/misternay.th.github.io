@@ -121,7 +121,11 @@
             console.log('Native call:', message);
 
             if (window.JSBridge && window.JSBridge[eventName]) {
-                window.JSBridge[eventName](...params);
+                if(params == undefined || params == {} || params == null) {
+                    window.JSBridge[eventName]();
+                } else {
+                    window.JSBridge[eventName](...params);
+                }
             } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer) {
                 window.webkit.messageHandlers.observer.postMessage(message);
             } else {
