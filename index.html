@@ -118,7 +118,7 @@
         // Function to call native functionality
         function callNative(eventName, params = {}) {
             if (window.JSBridge && window.JSBridge[eventName]) {
-                if(params == undefined || params == {} || params == null) {
+                if(params === undefined || params === {} || params === null) {
                     console.log("android if", params);
                     window.JSBridge[eventName]();
                 } else {
