@@ -115,6 +115,13 @@
             window.webkit.messageHandlers.observer.postMessage(message);
         }
 
+        window.bridge = {
+            getCameraImageCallback: null,
+            getCameraImageCallbackError: null,
+            getGalleryImageCallback: null,
+            getGalleryImageCallbackError: null
+        };
+
         // Helper functions to trigger native functionality
         function triggerNativeGetCameraImage(callback, callbackError) {
             if (window.bridge) {
