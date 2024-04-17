@@ -117,18 +117,18 @@
 
         // Function to call native functionality
         function callNative(eventName, params = {}) {
-            console.log(`callNative ${eventName} ${param}`);
-                    console.table(param);
-                    console.debug(param);
-            console.log(JSON.stringify(param));
+            console.log(`callNative ${eventName} ${params}`);
+                    console.table(params);
+                    console.debug(params);
+            console.log(JSON.stringify(params));
             if (window.JSBridge && window.JSBridge[eventName]) {
                 if(params === undefined || params === {} || params === null) {
                     console.log("android if", params);
                     window.JSBridge[eventName]();
                 } else {
                     console.log("android else", params);
-                    console.table(param);
-                    console.debug(param);
+                    console.table(params);
+                    console.debug(params);
                     window.JSBridge[eventName](params.base64Str);
                 }
             } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer) {
