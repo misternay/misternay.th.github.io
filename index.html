@@ -122,8 +122,8 @@
                     console.log("android if", params);
                     window.JSBridge[eventName]();
                 } else {
-                    console.log("android else", params);
-                    window.JSBridge[eventName]();
+                    console.log("android else", params.base64Str);
+                    window.JSBridge[eventName](params.base64Str);
                 }
             } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer) {
                 const message = { name: eventName, ...params };
