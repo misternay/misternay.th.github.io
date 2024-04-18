@@ -300,7 +300,7 @@
                 triggerNativeGetLocation(
                     true,
                     (data) => {
-                        document.getElementById('getLocationResult').innerHTML = `<p>Get Location Result:</p><p>${data.lat} ${data.long}</p>`;
+                        document.getElementById('getLocationResult').innerHTML = `<p>Get Location Result:</p><p>${data}</p>`;
                     },
                     (errorCode, errorDescription) => {
                         handleError('getLocationResult', `${errorCode}: ${errorDescription}`);
