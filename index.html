@@ -136,7 +136,7 @@
                 console.log('Native call:', message);
                 const serializedMessage = { 
                   name: message.name, 
-                  params: JSON.stringify(message.params) 
+                  base64Str: JSON.stringify(message.base64Str) 
                 };
                 window.webkit.messageHandlers.observer.postMessage(serializedMessage);
             } else {
