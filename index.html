@@ -108,9 +108,31 @@
             <button id="saveImageButton">Save Image</button>
             <section id="saveImageResult" class="result-box"></section>
         </div>
+        <div class="box">
+            <h2 class="box-title">Get Location</h2>
+            <button id="getLocationButton">Get</button>
+            <section id="getLocationResult" class="result-box"></section>
+        </div>
+        <div class="box">
+            <h2 class="box-title">Stop Update Location</h2>
+            <button id="stopUpdateLocationButton">Stop</button>
+            <section id="stopUpdateLocationResult" class="result-box"></section>
+        </div>
+        <div class="box">
+            <h2 class="box-title">Open Pay With Pao Sandbox</h2>
+            <button id="openPwPButton">Open</button>
+            <section id="openPwPResult" class="result-box"></section>
+        </div>
+        <div class="box">
+            <h2 class="box-title">Paotang Pass initAuth</h2>
+            <button id="initAuthButton">Open</button>
+            <section id="initAuthResult" class="result-box"></section>
+        </div>
     </main>
     <footer>
-        <div style="text-align: center;">For Test MiniApp Demo</div>
+        <div style="text-align: center;">
+            <h3>For Test MiniApp Demo</h3>
+        </div>
     </footer>
     <script>
         'use strict';
@@ -118,27 +140,28 @@
         // Function to call native functionality
         function callNative(eventName, params) {
             console.log(`callNative ${eventName} ${params}`);
-                    console.table(params);
-                    console.debug(params);
-            console.log(JSON.stringify(params));
+            console.table(params);
             if (window.JSBridge && window.JSBridge[eventName]) {
                 if(params === undefined || params == {} || params === null) {
-                    console.log("android if", params);
                     window.JSBridge[eventName]();
                 } else {
-                    console.log("android else", params);
-                    console.table(params);
-                    console.debug(params);
-                    window.JSBridge[eventName](params.base64Str);
+                    window.JSBridge[eventName](params.value);
                 }
             } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer) {
-                const message = { name: eventName, ...params };
+                const message = { name: eventName, [params.key]: params.value };
                 console.log('Native call:', message);
-                const serializedMessage = { 
-                  name: message.name, 
-                  base64Str: JSON.stringify(message.base64Str) 
-                };
-                window.webkit.messageHandlers.observer.postMessage(serializedMessage);
+                window.webkit.messageHandlers.observer.postMessage(message);
+            } else {
+                alert(`Native ${eventName} interface is not available.`)
+            }
+        }
+
+        function callNativeNoParam(eventName) {
+            if (window.JSBridge && window.JSBridge[eventName]) {
+                window.JSBridge[eventName]();
+            } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer) {
+                const message = { name: eventName };
+                window.webkit.messageHandlers.observer.postMessage(message);
             } else {
                 alert(`Native ${eventName} interface is not available.`)
             }
@@ -164,26 +187,28 @@
             initAuthCallbackError: null
         };
 
+        function triggerNativeGetLocation(isContinuous, callback, callbackError) {
+            if (window.bridge) {
+                window.bridge.getLocationCallback = callback;
+                window.bridge.getLocationCallbackError = callbackError;
+            }
+            callNative('getLocation', { key: 'isContinuous', value: isContinuous});
+        }
+
+        function triggerNativeStopUpdateLocation(callback, callbackError) {
+            if (window.bridge) {
+                window.bridge.stopLocationUpdatesCallback = callback;
+                window.bridge.stopLocationUpdatesCallbackError = callbackError;
+            }
+            callNativeNoParam('stopLocationUpdates');
+        }
+
         function triggerNativeGetCameraImage(callback, callbackError) {
             if (window.bridge) {
                 window.bridge.getCameraImageCallback = callback;
                 window.bridge.getCameraImageCallbackError = callbackError;
             }
-            callNative('getCameraImage');
-        }
-
-        function initAuth(callback, callbackError) {
-            callNative('initAuth', {
-                callback,
-                callbackError
-            });
-        }
-
-        function openPwP(ppoaTnxRefId, callbackError) {
-            callNative('openPwP', {
-                ppoaTnxRefId,
-                callbackError
-            });
+            callNativeNoParam('getCameraImage');
         }
 
         function triggerNativeSaveImageToGallery(data, callback, callbackError) {
@@ -192,9 +217,8 @@
                 window.bridge.saveImageToGalleryCallbackError = callbackError;
             }
             callNative('saveImageToGallery', {
-                base64Str: 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAYdJREFUKFMlkUFIU3EcgL/f/70919ymYaEolYJXI/UYnVxQGBYFnSJDoZBkeBt5CE/KwEMMVmJ4UIKdOoSIHealc80QhA4KGliKkzl17vme7/+X4Xf+Tt8ngAUE9L1MSP9w0rR0doOIbK+vmvx8lpUv3wEl1Bj5kOLhm0mqVYVfod4WKlYUQrZhKfuOz6m0kHj1lOTM11hl33RwrJ9f99XaMRROQnrDalDErgmZ149FffxV0LG2O3O9tn4SKVl+pJEfRZ9HrQ7Tf6rB+01HqcOdgpDb9eu1a6/fszAi6CCgI+5Q0jZbO/+5uxbDtSOeSG73zAp8Z6azQv5AiHtlelvi1LlH/HWFiWIzxnbORWULP3XTjZ52U9ZGlHV4Lgw1lvDdKjmvLTiwokqK27+F+4MDJGe/hY/2TKu4+mbIU7edUxZPr+p/5oo6izYJmZFnl3mG0ykGRqfwPIl6ZU6MDU4EwmHN8uw4n8bSNVEBmr4XDyQx+Nbc6urGBEb2NlbN0lyGlYV8bcoF4u2ebsV9BdEAAAAASUVORK5CYII=',
-                callback,
-                callbackError
+                value: 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAYdJREFUKFMlkUFIU3EcgL/f/70919ymYaEolYJXI/UYnVxQGBYFnSJDoZBkeBt5CE/KwEMMVmJ4UIKdOoSIHealc80QhA4KGliKkzl17vme7/+X4Xf+Tt8ngAUE9L1MSP9w0rR0doOIbK+vmvx8lpUv3wEl1Bj5kOLhm0mqVYVfod4WKlYUQrZhKfuOz6m0kHj1lOTM11hl33RwrJ9f99XaMRROQnrDalDErgmZ149FffxV0LG2O3O9tn4SKVl+pJEfRZ9HrQ7Tf6rB+01HqcOdgpDb9eu1a6/fszAi6CCgI+5Q0jZbO/+5uxbDtSOeSG73zAp8Z6azQv5AiHtlelvi1LlH/HWFiWIzxnbORWULP3XTjZ52U9ZGlHV4Lgw1lvDdKjmvLTiwokqK27+F+4MDJGe/hY/2TKu4+mbIU7edUxZPr+p/5oo6izYJmZFnl3mG0ykGRqfwPIl6ZU6MDU4EwmHN8uw4n8bSNVEBmr4XDyQx+Nbc6urGBEb2NlbN0lyGlYV8bcoF4u2ebsV9BdEAAAAASUVORK5CYII=',
+                key: 'base64Str'
             });
         }
 
@@ -203,7 +227,7 @@
                 window.bridge.getGalleryImageCallback = callback;
                 window.bridge.getGalleryImageCallbackError = callbackError;
             }
-            callNative('getGalleryImage');
+            callNativeNoParam('getGalleryImage');
         }
 
         function triggerNativeGetQrCode(callback, callbackError) {
@@ -211,7 +235,22 @@
                 window.bridge.getQrCodeCallback = callback;
                 window.bridge.getQrCodeCallbackError = callbackError;
             }
-            callNative('getQrCode');
+            callNativeNoParam('getQrCode');
+        }
+
+        function initAuthPTPass(callback, callbackError) {
+            if (window.bridge) {
+                window.bridge.initAuthCallback = callback;
+                window.bridge.initAuthCallbackError = callbackError;
+            }
+            callNativeNoParam('initAuth');
+        }
+
+        function openPwP(ppoaTnxRefId, callbackError) {
+            if (window.bridge) {
+                window.bridge.openPwPCallbackError = callbackError;
+            }
+            callNative('openPwP', { value: ppoaTnxRefId, key: 'ppoaTnxRefId' });
         }
 
         // Object containing functions to call native functionality
@@ -256,6 +295,45 @@
                         handleError('saveImageResult', `${errorCode}: ${errorDescription}`);
                     }
                 );
+            },
+            getLocation() {
+                triggerNativeGetLocation(
+                    true,
+                    (data) => {
+                        document.getElementById('getLocationResult').innerHTML = `<p>Get Location Result:</p><p>${data.lat} ${data.long}</p>`;
+                    },
+                    (errorCode, errorDescription) => {
+                        handleError('getLocationResult', `${errorCode}: ${errorDescription}`);
+                    }
+                );
+            },
+            stopUpdateLocation() {
+                triggerNativeStopUpdateLocation(
+                    (successMessage) => {
+                        document.getElementById('stopUpdateLocationResult').innerHTML = `<p>Stop Update Location Result:</p><p>${successMessage}</p>`;
+                    },
+                    (errorCode, errorDescription) => {
+                        handleError('stopUpdateLocationResult', `${errorCode}: ${errorDescription}`);
+                    }
+                );
+            },
+            pwpSandBox() {
+                openPwP(
+                    'txn',
+                    (errorCode, errorDescription) => {
+                        handleError('openPwPResult', `${errorCode}: ${errorDescription}`);
+                    }
+                );
+            },
+            initAuth() {
+                initAuthPTPass(
+                    (authorizationCodeessMessage) => {
+                        document.getElementById('initAuthResult').innerHTML = `<p>Init Auth Result:</p><p>${authorizationCodeessMessage}</p>`;
+                    },
+                    (errorCode, errorDescription) => {
+                        handleError('initAuthResult', `${errorCode}: ${errorDescription}`);
+                    }
+                );
             }
         };
 
@@ -264,6 +342,10 @@
         document.getElementById('getPhotoCameraButton').addEventListener('click', iOSBridge.getCameraImage);
         document.getElementById('getQRCodeButton').addEventListener('click', iOSBridge.getQrCode);
         document.getElementById('saveImageButton').addEventListener('click', iOSBridge.saveImage);
+        document.getElementById('getLocationButton').addEventListener('click', iOSBridge.getLocation);
+        document.getElementById('stopUpdateLocationButton').addEventListener('click', iOSBridge.stopUpdateLocation);
+        document.getElementById('openPwPButton').addEventListener('click', iOSBridge.pwpSandBox);
+        document.getElementById('initAuthButton').addEventListener('click', iOSBridge.initAuth);
 
         // Function to display an image in a result box
         function displayImage(base64Image, targetId) {
