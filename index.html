@@ -134,8 +134,11 @@
             } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.observer) {
                 const message = { name: eventName, ...params };
                 console.log('Native call:', message);
-
-                window.webkit.messageHandlers.observer.postMessage({ message });
+                const serializedMessage = { 
+                  name: message.name, 
+                  params: JSON.stringify(message.params) 
+                };
+                window.webkit.messageHandlers.observer.postMessage(serializedMessage);
             } else {
                 alert(`Native ${eventName} interface is not available.`)
             }
