@@ -120,6 +120,7 @@
         </div>
         <div class="box">
             <h2 class="box-title">Open Pay With Pao Sandbox</h2>
+            <input type="text" id="pwpTxnRefId">
             <button id="openPwPButton">Open</button>
             <section id="openPwPResult" class="result-box"></section>
         </div>
@@ -250,7 +251,8 @@
             if (window.bridge) {
                 window.bridge.openPwPCallbackError = callbackError;
             }
-            callNative('openPwP', { value: ppoaTnxRefId, key: 'ppoaTnxRefId' });
+            let pwpTxnRefId = document.getElementById("pwpTxnRefId").value;
+            callNative('openPwP', { value: pwpTxnRefId, key: 'ppoaTnxRefId' });
         }
 
         // Object containing functions to call native functionality
